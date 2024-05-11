@@ -51,7 +51,6 @@ x = np.linspace(xmin, xmax, 100)
 p = st.gamma.pdf(x, a=alpha, loc=loc, scale=scale)
 plt.plot(x, p, 'k', linewidth=1.5, label='Gamma Fit')
 # Set plot title and labels
-#plt.title('Gamma Distribution Fit')
 plt.xlabel('Value')
 plt.ylabel('Density')
 plt.legend()
@@ -63,10 +62,48 @@ plt.show()
 
 ## GLM directly, frequentist
 from sklearn.linear_model import GammaRegressor as gr
-gamma_glm = gr()
-gamma_glm.fit(X_train, y_train+1e-5)
-print(mean_squared_error(y_test+1e-5, gamma_glm.predict(X_test)))
-print(mean_absolute_error(y_test+1e-5, gamma_glm.predict(X_test)))
+from sklearn.model_selection import KFold
+X_train_cv = X_train.to_numpy()
+y_train_cv = y_train.to_numpy() + 1e-4 # avoid zero-division, positive outcomes
+
+## Find best penalty hyperparameter using cross-validation
+alpha_grid = np.arange(0.1, 10, 0.1)
+kf = KFold(n_splits=5)
+alpha_mses = []
+best_a, best_mse = None, np.inf
+for a in alpha_grid:
+    avg_mse = 0
+    for i, (train_idcs, test_idcs) in enumerate(kf.split(X_train_cv)):
+        gamma_glm = gr(alpha = a)
+        gamma_glm.fit(X_train_cv[train_idcs, :], y_train_cv[train_idcs])
+        avg_mse += mean_squared_error(y_train_cv[test_idcs], gamma_glm.predict(X_train_cv[test_idcs, :]))
+    avg_mse /= 5
+    alpha_mses.append(avg_mse)
+    if avg_mse < best_mse:
+        best_mse = avg_mse
+        best_a = a
+
+#np.save("best_a", best_a)
+best_a = np.load("best_a.npy")
+
+plt.figure(figsize=(8,5))
+plt.plot(alpha_grid, alpha_mses, color = "olivedrab", label="avg mse")
+plt.axvline(best_a, color = "black", label=f"minimum: a = {best_a}", linestyle="--")
+plt.grid(alpha=.2)
+plt.xlabel("alpha")
+plt.ylabel("Avg cross-validation MSE")
+plt.legend()
+plt.show()
+
+gamma_glm = gr(alpha = best_a.item())
+gamma_glm.fit(X_train, y_train+1e-4)
+print(f"MSE: {mean_squared_error(y_test+1e-4, gamma_glm.predict(X_test))}")
+print(f"MAE: {mean_absolute_error(y_test+1e-4, gamma_glm.predict(X_test))}")
+
+ 
+## Save model to same location as other models
+import joblib
+joblib.dump(gamma_glm, f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_models/gamma_glm.pkl")
 
 """ Code below writes Bayesian regression model for the Gamma distribution, plots the coefficient estimates,
 traceplots and histograms.
