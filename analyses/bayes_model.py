@@ -60,8 +60,25 @@ plt.grid(alpha=.2)
 plt.savefig(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/outputs/data_gamma_dist")
 plt.show()
 
-## Given that best-fitting distribution for the data is gamma, we can turn to a 
-## Bayesian regression setting with Gamma prior on the regression coefficients (conjugate)
+
+## GLM directly, frequentist
+from sklearn.linear_model import GammaRegressor as gr
+gamma_glm = gr()
+gamma_glm.fit(X_train, y_train+1e-5)
+print(mean_squared_error(y_test+1e-5, gamma_glm.predict(X_test)))
+print(mean_absolute_error(y_test+1e-5, gamma_glm.predict(X_test)))
+
+""" Code below writes Bayesian regression model for the Gamma distribution, plots the coefficient estimates,
+traceplots and histograms.
+
+Moreover, fits 2 more models based on the distribution (Gamma and ZeroInflated Poisson) to the data
+
+However, not very useful for inference, so this might be useful as resources on Bayesian regression with
+Gamma-distributed outcomes are rare and incomplete online, so useful for modelling if confidence intervals
+of training data itself and coefficients are of use
+"""
+
+"""
 import pymc3 as pm
 import arviz as az
 
@@ -79,7 +96,6 @@ with pm.Model() as gamma_reg:
     coefs = [pm.Normal(f'coef_{c}') for c in X_train.columns]
     X_model = pm.Data("X", X_train.to_numpy())
     # Deterministic for the mean
-    #mu = pm.Deterministic('mu', pm.math.exp(intcpt + pm.math.dot(X_model, coefs)))
     
     # Likelihood
     likelihood = pm.Gamma('y', mu=pm.math.exp(intcpt + pm.math.dot(X_model, coefs)), alpha=1, beta=rate, observed=y_train+1e-4) # add 1e-4 to avoid zero-division
@@ -102,24 +118,7 @@ plt.savefig(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/outputs/post_d
 plt.show()
 
 
-## Could try to just sample normally after setting data
-with gamma_reg:
-    pm.set_data({"X": X_test})
-    pred_samples = pm.sample()
-pred_samples.shape
-
 ## Posterior predictions, already have trace from above
-# Can just go through all model draws without burn in and find predictions
-
-with gamma_reg:
-    pm.set_data({"X": X_test})
-    pp = pm.sample_posterior_predictive(trace, predictions=True, return_inferencedata=True, random_seed=seed)#, samples=500)
-    #pp = pm.sample_posterior_predictive(trace, predictions=True, var_names=["y"])
-pp.predictions
-pp
-
-y_preds = pp.predictions["y"].to_numpy()
-
 with gamma_reg:
     pm.set_data({"X": X_test})
     posterior_predictive = pm.sample_posterior_predictive(trace, var_names=["y", "mu"], predictions=True)
@@ -134,7 +133,7 @@ mus = model_preds.data_vars["mu"].to_numpy()
 
 import scipy.stats as st
 st.gamma(loc=mus).pdf()
-"""trace.posterior.data_vars["coef_DC"][:, 0].to_numpy()
+trace.posterior.data_vars["coef_DC"][:, 0].to_numpy()
 
 predictions = np.zeros((len(X_test), 2000)) # first 500 for burn-in
 def get_dot(s, row):
@@ -142,9 +141,7 @@ def get_dot(s, row):
     coefs[:, 0] = trace.posterior.data_vars["int"][:, s].to_numpy()
     for j, c in enumerate(X_test.columns):
         coefs[:, j+1] = trace.posterior.data_vars[f"coef_{c}"][:, s].to_numpy()
-    #print(coefs, coefs.shape)
     preds = np.exp(coefs[:, 0] + np.dot(row, coefs[:, 1:].T))
-    #print(preds, preds.shape)
     return np.mean(preds)
 
 # Calculate mean prediction across batches for each draw. Reset index for correct indexing
@@ -162,7 +159,7 @@ gamma_glm = gr()
 gamma_glm.fit(X_train, y_train+1e-5)
 print(mean_squared_error(y_test+1e-5, gamma_glm.predict(X_test)))
 print(mean_absolute_error(y_test+1e-5, gamma_glm.predict(X_test)))
-print(mean_squared_error(y_test, np.mean(predictions, axis = 1)))"""
+print(mean_squared_error(y_test, np.mean(predictions, axis = 1)))
 
 import statsmodels.api as sm
 df_train = X_train.copy()
@@ -181,3 +178,4 @@ zip = zip.fit()
 zip.summary()
 mean_squared_error(y_test, zip.predict(X_test))
 mean_absolute_error(y_test, zip.predict(X_test))
+"""
