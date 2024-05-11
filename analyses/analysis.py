@@ -72,6 +72,20 @@ for x in range(1, 10):
         preds[y-2, x-1] = np.exp(xgb.predict(mean_df)) - 1
         preds_prob[y-2, x-1] = xgb_clas.predict_proba(mean_df)[0][-1]
 
+## Instead of using mean (would keep predictions very similar), pass over whole dataset
+## Just setting X and Y given
+preds_pdp = np.zeros((8, 9), dtype = np.float32)
+for x in range(1, 10):
+    for y in range(2, 10):
+        # As above could have full pass over all data, just setting X and Y
+        xy_preds = []
+        for i, r in X.iterrows():
+            r = r.T
+            r["X"] = x
+            r["Y"] = y
+            xy_preds.append(np.exp(xgb.predict(r)) - 1)
+        preds_pdp[y-2, x-1] = np.mean(xy_preds)
+
 #### Shades respective area with predicted size by XGB ####
 from mpl_toolkits.axes_grid1 import inset_locator
 import matplotlib.cm as cm
@@ -81,7 +95,7 @@ import matplotlib.patches as patches
 image_path = f"{os.path.join(os.path.dirname(__file__), '..')}/data/raw/montesinho_map.png"
 image = plt.imread(image_path)
 
-# Create a figure and axis
+# Create a figure and axis - MEAN PREDICTIONS
 fig, ax = plt.subplots()
 ax.imshow(image, aspect='auto') # 'auto' adjusts the aspect ratio to match the image
 
@@ -98,16 +112,39 @@ for x in range(1, 10):
             #ax.scatter((x-1)*84.5*1.15+42.25, (y-1)*51.9*1.13+25.95, s=size, color=color, alpha=0.6)
             rect = patches.Rectangle(((x-1)*84.5*1.135, (y-1)*51.9*1.12), 94.6, 59, linewidth=.4, color = color, alpha = 0.4)
         ax.add_patch(rect)
-
 ax.axis('off')
-
 # Create an inset for the colorbar
 axins = inset_locator.inset_axes(ax, width="50%", height="4%", loc='lower left')
-
 norm = Normalize(vmin=np.min(preds), vmax=np.max(preds))
 cbar = plt.colorbar(cm.ScalarMappable(cmap='coolwarm', norm=norm), cax=axins, orientation='horizontal')
 cbar.set_label('Predicted ln(Area)')
-
 # Save the figure
 plt.savefig(f"{os.path.join(os.path.dirname(__file__), '..')}/outputs/pred_area_map.png")
+plt.show()
+
+# Create a figure and axis - FULL DATA PASS
+fig, ax = plt.subplots()
+ax.imshow(image, aspect='auto') # 'auto' adjusts the aspect ratio to match the image
+
+# Plot each point, scaling the size by the area value and color-coding
+for x in range(1, 10):
+    for y in range(2, 10):
+        size = 100 * preds_pdp[y-2, x-1]
+        # Color-code the dots
+        color = cm.coolwarm(preds[y-2, x-1] / np.max(preds_pdp))
+        if x == 1:
+            #ax.scatter(70, (y-1)*51.9*1.13+25.95, s=size, color=color, alpha=0.6) # can additionally plot dot with size as area on top of rects
+            rect = patches.Rectangle((10, (y-1)*51.9*1.12), 84.8, 59, linewidth=.4, color = color, alpha = 0.4)
+        else:
+            #ax.scatter((x-1)*84.5*1.15+42.25, (y-1)*51.9*1.13+25.95, s=size, color=color, alpha=0.6)
+            rect = patches.Rectangle(((x-1)*84.5*1.137, (y-1)*51.9*1.12), 94.6, 59, linewidth=.4, color = color, alpha = 0.4)
+        ax.add_patch(rect)
+ax.axis('off')
+# Create an inset for the colorbar
+axins = inset_locator.inset_axes(ax, width="50%", height="4%", loc='lower left')
+norm = Normalize(vmin=np.min(preds_pdp), vmax=np.max(preds_pdp))
+cbar = plt.colorbar(cm.ScalarMappable(cmap='coolwarm', norm=norm), cax=axins, orientation='horizontal')
+cbar.set_label('Predicted ln(Area)')
+# Save the figure
+plt.savefig(f"{os.path.join(os.path.dirname(__file__), '..')}/outputs/pred_area_map_full.png")
 plt.show()
