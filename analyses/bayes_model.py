@@ -15,7 +15,7 @@ y = df.area
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=seed)
 
-
+## Function as seen here: https://stackoverflow.com/questions/37487830/how-to-find-probability-distribution-and-parameters-for-real-data-python-3
 def get_best_distribution(data):
     dist_names = ["gamma", "exponweib", "weibull_max", "weibull_min", "expon", "lognorm", "beta"]
     dist_results = []
@@ -83,8 +83,8 @@ for a in alpha_grid:
         best_mse = avg_mse
         best_a = a
 
-#np.save("best_a", best_a)
-best_a = np.load("best_a.npy")
+#np.save(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/src/saved_models/best_a.npy", best_a)
+best_a = np.load(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/src/saved_models/best_a.npy")
 
 plt.figure(figsize=(8,5))
 plt.plot(alpha_grid, alpha_mses, color = "olivedrab", label="avg mse")
@@ -93,6 +93,7 @@ plt.grid(alpha=.2)
 plt.xlabel("alpha")
 plt.ylabel("Avg cross-validation MSE")
 plt.legend()
+plt.savefig(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/outputs/gridsearch_glm")
 plt.show()
 
 gamma_glm = gr(alpha = best_a.item())
@@ -141,7 +142,7 @@ with pm.Model() as gamma_reg:
     trace = pm.sample(1000, tune=500, chains=2, return_inferencedata=True)
     pm.plot_trace(trace)
 
-trace.to_netcdf("trace.nc")
+trace.to_netcdf(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/src/saved_models/trace_nc")
 # Plotting the posterior distribution of the coefficients
 pm.plot_posterior(trace, var_names=[f'coef_{c}' for c in X_train.columns])
 plt.tight_layout()
@@ -188,7 +189,7 @@ for i, r in X_test.reset_index().drop("index", axis = 1).iterrows():
         ## Have 6 chains per draw, put mean of those in predictions
         predictions[i, s-500] = get_dot(s, r)
 
-np.save("predictions_bayes", predictions)
+np.save(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/src/saved_models/predictions_bayes", predictions)
 
 ## GLM directly, frequentist
 from sklearn.linear_model import GammaRegressor as gr

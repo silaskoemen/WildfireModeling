@@ -6,18 +6,15 @@ from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor, XGBClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
-#import tensorflow as tf
-#from tensorflow.keras import Sequential
-#from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from sklearn.model_selection import train_test_split
 from bayes_opt import BayesianOptimization
 from sklearn.metrics import mean_squared_error, mean_absolute_error, log_loss, accuracy_score
 import joblib
+from sklearn.preprocessing import StandardScaler
 
 df = pd.read_csv(f"{os.path.join(os.path.dirname(__file__), '..' )}/data/derived/data.csv")
 seed = 1234 
 ols, gp, rf, xgb = LinearRegression(fit_intercept=True), GaussianProcessRegressor(random_state=seed), RandomForestRegressor(random_state=seed), XGBRegressor(random_state = seed)
-
 
 X = df.drop("area", axis=1)
 y = df.area
@@ -29,13 +26,38 @@ y_clas = pd.Series(y_clas)
 # Split into train, validation and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=seed)
-
+X_train_std, X_test_std, y_train_std, y_test_std = train_test_split(X, y, test_size=0.2, random_state=seed)
+scaler = StandardScaler().fit(X_train_std)
+X_train_std = scaler.transform(X_train_std)
+X_test_std = scaler.transform(X_test_std)
 # OLS doesn't have any tuneable parameters
 ols.fit(pd.concat((X_train, X_val), axis = 0), pd.concat((y_train, y_val), axis = 0))
+ols_norm = LinearRegression()
+ols_norm.fit(X_train_std, y_train_std)
+
+# Plot from normalized OLS model
+plt.figure(figsize=(10, 5))
+plt.bar(range(13), np.insert(ols_norm.coef_, 0, ols_norm.intercept_), color = "black")
+plt.axhline(0, color = "black", linewidth = 0.5)
+plt.ylabel("Coefficient")
+plt.xticks(range(13), labels=np.insert(X_train.columns, 0, "Int"), fontsize=7, rotation=60)
+plt.savefig(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/outputs/coefs_ols.png")
+plt.show()
+
+# Prediction quality identical so continue further with normal OLS model as it does not need a scaler
+# that is only fitted on training data
+print(mean_squared_error(y_test, ols.predict(X_test)), mean_squared_error(y_test, ols_norm.predict(X_test_std)))
+
+from sklearn.feature_selection import f_regression
+p_vals_ols = f_regression(X_train_std, y_train_std)[1]
+
+for i, c in enumerate(ols_norm.coef_):
+    print(f"{X.columns[i]}: {c}, pvalue {p_vals_ols[i]}")
+
+# For latex table notation, use " & ".join(format(x, "10.4f") for x in ols_norm.coef_)
 
 # GP can only decide over kernel, but leave at default
 gp.fit(X = pd.concat((X_train, X_val), axis = 0), y = pd.concat((y_train, y_val), axis = 0))
-
 
 # Ranfom forest optimal hyperparameters
 pbounds_rf = {
@@ -169,6 +191,9 @@ logreg.fit(pd.concat((X_train, X_val), axis = 0), y_train_clas)
 print(accuracy_score(y_test_clas, logreg.predict(X_test))) # less than 50%, so regression more useful
 
 """
+import tensorflow as tf
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 # Neural network can use BO over num_layers, dropout, batch normalization and units
 pbounds_nn = {
     'num_layers': (1, 4),
