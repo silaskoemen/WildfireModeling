@@ -36,9 +36,6 @@ gp = joblib.load(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_
 rf = RandomForestRegressor()
 rf = joblib.load(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_models/rf.pkl")
 
-# Use OLS and XGB for feature importance
-print(ols.intercept_, ols.coef_ ) # falls pvalues könnte abs value als percentage plotten as "Feature Importance"
-
 plt.figure(figsize=(7, 4), dpi = 100)
 plt.bar(range(1, 13), 100*xgb.feature_importances_, color = "black", alpha = 0.7, label = "XGB")
 plt.bar(range(1, 13), 100*rf.feature_importances_, color = "orange", alpha = 0.7, label = "RF")
@@ -59,7 +56,6 @@ plt.show()
 
 # Map predict size and probability for each square
 mean_df = pd.DataFrame(X.mean()).T 
-# instead of mean could iterate over all observations and just set X and Y to have predictions more like PDP above
 
 # Y only has values from 2 through 9
 preds = np.zeros((8, 9), dtype = np.float32)
@@ -147,4 +143,24 @@ cbar = plt.colorbar(cm.ScalarMappable(cmap='coolwarm', norm=norm), cax=axins, or
 cbar.set_label('Predicted ln(Area)')
 # Save the figure
 plt.savefig(f"{os.path.join(os.path.dirname(__file__), '..')}/outputs/pred_area_map_full.png")
+plt.show()
+
+### Plot predictions against true values ###
+fig, ax = plt.subplots(1, 3, figsize=(11, 4))
+ax = ax.flatten()
+ax[0].scatter(y_test, xgb.predict(X_test), color = "black", label="XGB")
+ax[0].set_xlabel("XGB predictions")
+ax[0].set_ylabel("True values")
+ax[0].legend()
+ax[0].grid(alpha=.2) ###
+ax[1].scatter(y_test, rf.predict(X_test), color = "forestgreen", label="RF")
+ax[1].set_xlabel("RF predictions")
+ax[1].legend()
+ax[1].grid(alpha=.2) ###
+ax[2].scatter(y_test, gp.predict(X_test), color = "red", label="GP")
+ax[2].set_xlabel("GP predictions")
+ax[2].legend()
+ax[2].grid(alpha=.2) ###
+plt.tight_layout()
+plt.savefig(f"{os.path.join(os.path.dirname(__file__), '..')}/outputs/pred_vs_true")
 plt.show()

@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 
 df = pd.read_csv(f"{os.path.join(os.path.dirname(__file__), '..' )}/data/derived/data.csv")
 seed = 1234 
-ols, gp, rf, xgb = LinearRegression(fit_intercept=True), GaussianProcessRegressor(random_state=seed), RandomForestRegressor(random_state=seed), XGBRegressor(random_state = seed)
+ols, gp, rf, xgb = LinearRegression(fit_intercept=True), GaussianProcessRegressor(random_state=seed, normalize_y=True), RandomForestRegressor(random_state=seed), XGBRegressor(random_state = seed)
 
 X = df.drop("area", axis=1)
 y = df.area
@@ -93,10 +93,10 @@ rf_opt.maximize(n_iter = 100)
 rf_dict = rf_opt.max
 
 # Fit with best set of parameters
-n_estimators = round(rf_dict["params"]["n_estimators"])
-max_depth = round(rf_dict["params"]["max_depth"])
-max_features = rf_dict["params"]["max_features"]
-min_samples_split = round(rf_dict["params"]["min_samples_split"])
+n_estimators = round(rf_dict["params"]["n_estimators"]) # 126
+max_depth = round(rf_dict["params"]["max_depth"]) # 2
+max_features = rf_dict["params"]["max_features"] # 0.7721
+min_samples_split = round(rf_dict["params"]["min_samples_split"]) # 2
 rf = RandomForestRegressor(n_estimators = n_estimators, max_depth = max_depth, min_samples_split = min_samples_split, max_features= max_features, n_jobs = 8)
 rf.fit(pd.concat((X_train, X_val), axis = 0), pd.concat((y_train, y_val), axis = 0))
 
@@ -131,10 +131,10 @@ xgb_opt.maximize(n_iter = 100)
 xgb_dict = xgb_opt.max
 
 # Fit with best set of parameters
-n_estimators = round(xgb_dict["params"]["n_estimators"])
-max_depth = round(xgb_dict["params"]["max_depth"])
-learning_rate = xgb_dict["params"]["learning_rate"]
-subsample = xgb_dict["params"]["subsample"]
+n_estimators = round(xgb_dict["params"]["n_estimators"]) # 279
+max_depth = round(xgb_dict["params"]["max_depth"]) # 4
+learning_rate = xgb_dict["params"]["learning_rate"] # 0.0047
+subsample = xgb_dict["params"]["subsample"] # 0.6591
 xgb = XGBRegressor(n_estimators = n_estimators, max_depth = max_depth, learning_rate = learning_rate, subsample = subsample)
 xgb.fit(pd.concat((X_train, X_val), axis = 0), pd.concat((y_train, y_val), axis = 0))
 
