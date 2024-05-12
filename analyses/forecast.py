@@ -68,5 +68,13 @@ def forecast(map=False, X=5, Y=5, month = 6, day=1, FFMC = 85, DMC = 50, DC = 10
         plt.show()
 
 # Can use this to fill in any inputs, if map = True, whole map is plotted for input values (and all X,Y)
-forecast(map=True, X = 5, Y = 5, month = 1, day = 1, FFMC=80, DMC = 50,
+forecast(map=True, X = 5, Y = 5, month = 6, day = 1, FFMC=80, DMC = 50,
                  DC = 100, ISI = 2, temp = 10, RH = 30, wind = 10, rain = 10)
+
+# Highest
+forecast(map=True, X = 9, Y = 5, month = 9, day = 6, FFMC=86, DMC = 210,
+                 DC = 320, ISI = 11, temp = 30, RH = 60, wind = 10, rain = 0)
+
+# Lowest
+forecast(map=True, X = 3, Y = 9, month = 1, day = 3, FFMC=92.5, DMC = 25,
+                 DC = 600, ISI = 3, temp = 16, RH = 20, wind = 0, rain = 4)
