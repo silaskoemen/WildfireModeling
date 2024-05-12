@@ -182,7 +182,6 @@ xgb_clas.fit(pd.concat((X_train, X_val), axis = 0), pd.concat((y_train_clas, y_v
 print(f"Test set accuracy XGBClassifier: {accuracy_score(y_test_clas, xgb_clas.predict(X_test))}")
 xgb_clas.save_model(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_models/xgb_clas.txt")
 
-
 ##### Logistic regression for classification #####
 from sklearn.linear_model import LogisticRegressionCV as LR
 y_train_clas, y_test_clas = train_test_split(y_clas, test_size=0.2, random_state=seed)
