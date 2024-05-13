@@ -17,14 +17,14 @@ df = pd.read_csv(f"{os.path.join(os.path.dirname(__file__), '..' )}/data/derived
 seed = 1234 
 X = df.drop("area", axis=1)
 y = df.area
-# Split into train, validation and test set
+# Split into train, validation and test set, same seed across all files
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=seed)
 
 
 ##### Load models with optimal hyperparameters #####
 # IMPORTANT: especially joblib with sklearn might not work for different versions, see specific package 
-# versions at /src/requirements.txt
+# versions at /requirements.txt
 xgb = XGBRegressor()
 xgb.load_model(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_models/xgb.txt")
 xgb_clas = XGBClassifier()
