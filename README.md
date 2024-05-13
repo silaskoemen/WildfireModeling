@@ -38,7 +38,7 @@ To run this project locally, follow these steps:
 
 ## Usage
 
-The data folder contains the raw and processed data. Any of the model training uses the processed data directly. Moreover, the final trained models are saved and loaded for further analysis, so models do not have to be retrained. Should you want to retrain the models or add new ones, just follow the outline of [models.py](./analyses/models.py), but pay close attention to the sklearn and joblib versions in [requirements.txt](./src/requirements.txt) so loading and saving works! The forecasting tool also just uses the final, trained models directly under [saved_models](./src/saved_models)
+The data folder contains the raw and processed data. Any of the model training uses the processed data directly. Moreover, the final trained models are saved and loaded for further analysis, so models do not have to be retrained. Should you want to retrain the models or add new ones, just follow the outline of [models.py](./analyses/models.py), but pay close attention to the sklearn and joblib versions in [requirements.txt](./src/requirements.txt) so loading and saving works! The forecasting tool also just uses the final, trained models directly under [saved_models](./src/saved_models). All output plots can be created directly from the python files provided, and they will be saved to [outputs](./outputs) directly.
 
 ## Contributing
 
