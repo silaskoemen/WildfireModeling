@@ -41,6 +41,7 @@ plt.bar(range(13), np.insert(ols_norm.coef_, 0, ols_norm.intercept_), color = "b
 plt.axhline(0, color = "black", linewidth = 0.5)
 plt.ylabel("Coefficient")
 plt.xticks(range(13), labels=np.insert(X_train.columns, 0, "Int"), fontsize=7, rotation=60)
+plt.grid(alpha=.2)
 plt.savefig(f"{os.path.join(os.path.dirname( __file__ ), '..' )}/outputs/coefs_ols.png")
 plt.show()
 

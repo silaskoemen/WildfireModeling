@@ -9,7 +9,7 @@ df = pd.read_csv(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/data/deri
 colors = ("#FC8A17", "#F73718")
 
 # Create heatmap with correlation values, similar to: https://medium.com/@szabo.bibor/how-to-create-a-seaborn-correlation-heatmap-in-python-834c0686b88e
-plt.figure(figsize=(14, 7))
+plt.figure(figsize=(12, 6))
 # mask for upper triangle
 mask = np.triu(np.ones_like(df.corr(), dtype=np.bool))
 heatmap = sns.heatmap(df.corr(), mask=mask, vmin=-1, vmax=1, annot=True, cmap='coolwarm')

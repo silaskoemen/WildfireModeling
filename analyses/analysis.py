@@ -129,10 +129,8 @@ for x in range(1, 10):
         # Color-code the dots
         color = cm.coolwarm(preds[y-2, x-1] / np.max(preds_pdp))
         if x == 1:
-            #ax.scatter(70, (y-1)*51.9*1.13+25.95, s=size, color=color, alpha=0.6) # can additionally plot dot with size as area on top of rects
             rect = patches.Rectangle((10, (y-1)*51.9*1.12), 84.8, 59, linewidth=.4, color = color, alpha = 0.4)
         else:
-            #ax.scatter((x-1)*84.5*1.15+42.25, (y-1)*51.9*1.13+25.95, s=size, color=color, alpha=0.6)
             rect = patches.Rectangle(((x-1)*84.5*1.137, (y-1)*51.9*1.12), 94.6, 59, linewidth=.4, color = color, alpha = 0.4)
         ax.add_patch(rect)
 ax.axis('off')

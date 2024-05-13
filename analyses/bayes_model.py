@@ -17,6 +17,14 @@ X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.
 
 ## Function as seen here: https://stackoverflow.com/questions/37487830/how-to-find-probability-distribution-and-parameters-for-real-data-python-3
 def get_best_distribution(data):
+    """ Function to return the best-fitting function for the parsed data
+    
+    Args:
+    data [pd.DataFrame, pd.Series or np.ndarray]: data to determine the distribution
+    
+    Returns:
+    (best_dist, best_p, params) [str, float, dict]: parameters of distribution
+    """
     dist_names = ["gamma", "exponweib", "weibull_max", "weibull_min", "expon", "lognorm", "beta"]
     dist_results = []
     params = {}
@@ -30,9 +38,8 @@ def get_best_distribution(data):
         print("p value for "+dist_name+" = "+str(p))
         dist_results.append((dist_name, p))
 
-    # select the best fitted distribution
+    # select best-fitting distr and store name and p-value
     best_dist, best_p = (max(dist_results, key=lambda item: item[1]))
-    # store the name of the best fit and its p value
 
     print("Best fitting distribution: "+str(best_dist))
     print("Best p value: "+ str(best_p))
@@ -58,7 +65,6 @@ plt.xlim(0, xmax)
 plt.grid(alpha=.2)
 plt.savefig(f"{os.path.join( os.path.dirname( __file__ ), '..' )}/outputs/data_gamma_dist")
 plt.show()
-
 
 ## GLM directly, frequentist
 from sklearn.linear_model import GammaRegressor as gr
@@ -101,7 +107,7 @@ gamma_glm.fit(X_train, y_train+1e-4)
 print(f"MSE: {mean_squared_error(y_test+1e-4, gamma_glm.predict(X_test))}")
 print(f"MAE: {mean_absolute_error(y_test+1e-4, gamma_glm.predict(X_test))}")
 
- 
+
 ## Save model to same location as other models
 import joblib
 joblib.dump(gamma_glm, f"{os.path.join(os.path.dirname( __file__ ), '..' )}/src/saved_models/gamma_glm.pkl")
