@@ -34,12 +34,12 @@ The outputs folder contains the results of the analyses, including visualization
 To run this project locally, follow these steps:
 
 1. Clone the repository: git clone https://github.com/silaskoemen/02501162-math70076-assessment-2.git
-2. Navigate to the project directory: cd 02501162-math70076-assessment-2
+2. Navigate to the project directory source folder: cd 02501162-math70076-assessment-2/src
 3. Install required packages (specific versions for saving and loading of models: pip install -r requirements.txt OR pip3 install -r requirements.txt
 
 ## Usage
 
-The data folder contains the raw and processed data. Any of the model training uses the processed data directly. Moreover, the final trained models are saved and loaded for further analysis, so models do not have to be retrained. Should you want to retrain the models or add new ones, just follow the outline of models.py, but pay close attention to the sklearn and joblib versions in Requirements.txt so loading and saving works! The forecasting tool also just uses the final, trained models directly.
+The data folder contains the raw and processed data. Any of the model training uses the processed data directly. Moreover, the final trained models are saved and loaded for further analysis, so models do not have to be retrained. Should you want to retrain the models or add new ones, just follow the outline of models.py, but pay close attention to the sklearn and joblib versions in requirements.txt so loading and saving works! The forecasting tool also just uses the final, trained models directly.
 
 ## Contributing
 
