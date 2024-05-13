@@ -23,7 +23,7 @@ y_clas = [1. if o > 0. else 0. for o in y]
 y_clas = pd.Series(y_clas)
 
 ##### Optimal hyperparameters #####
-# Split into train, validation and test set
+# Split into train, validation and test set, always same seed
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=seed)
 X_train_std, X_test_std, y_train_std, y_test_std = train_test_split(X, y, test_size=0.2, random_state=seed)
