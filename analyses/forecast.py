@@ -64,7 +64,7 @@ def forecast(map=False, X=5, Y=5, month = 6, day=1, FFMC = 85, DMC = 50, DC = 10
         axins = inset_locator.inset_axes(ax, width="50%", height="4%", loc='lower left')
         norm = Normalize(vmin=np.min(preds_fc), vmax=np.max(preds_fc))
         cbar = plt.colorbar(cm.ScalarMappable(cmap='coolwarm', norm=norm), cax=axins, orientation='horizontal')
-        cbar.set_label('Predicted ln(Area)')
+        cbar.set_label('Area (hectares)')
         plt.show()
 
 # Can use this to fill in any inputs, if map = True, whole map is plotted for input values (and all X,Y)
