@@ -19,7 +19,7 @@ This project utilizes the forest fires dataset available at the UCI Machine Lear
 
 ## Data
 
-The dataset used in this project is sourced from the UCI Machine Learning Repository. It includes various features related to weather conditions and geographical location, among others.
+The dataset used in this project is sourced from the UCI Machine Learning Repository. It includes various features related to weather conditions, time/season and geographical location, among others.
 
 ## Analyses
 
