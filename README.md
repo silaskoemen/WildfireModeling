@@ -18,7 +18,7 @@ The dataset used in this project is sourced from the UCI Machine Learning Reposi
 
 ## Analyses
 
-This section contains the analyses performed on the dataset, including exploratory data analysis (EDA), feature selection, and model training and evaluation. Moreover, it contains [forecast.py](./analyses/forecast.py) , which allows forecasted values for specific user input. Additionally, it contains a Bayesian regression with PyMC in the file [bayes_model](./analyses/bayes_model), which is not used for predictive inference but might still prove useful because tutorials on Bayesian Gamma regression are often parametrized incorrectly. Apart from regression coefficients or built-in feature importance tools, Partial Dependence Plots (PDPs) are used to understand how the variables affect the outcome
+This section contains the analyses performed on the dataset, including exploratory data analysis (EDA), feature selection, and model training and evaluation. Moreover, it contains [forecast.py](./analyses/forecast.py) , which allows forecasted values for specific user input. Additionally, it contains a Bayesian regression with PyMC in the file [bayes_model](./analyses/bayes_model.py), which is not used for predictive inference but might still prove useful because tutorials on Bayesian Gamma regression are often parametrized incorrectly. Apart from regression coefficients or built-in feature importance tools, Partial Dependence Plots (PDPs) are used to understand how the variables affect the outcome
 
 ## Outputs
 
