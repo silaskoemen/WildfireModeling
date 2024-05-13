@@ -35,7 +35,7 @@ To run this project locally, follow these steps:
 
 1. Clone the repository: git clone https://github.com/silaskoemen/02501162-math70076-assessment-2.git
 2. Navigate to the project directory: cd 02501162-math70076-assessment-2
-3. Install required packages (specific versions for saving and loading of models: pip install -r requirements.txt / pip3 install -r requirements.txt
+3. Install required packages (specific versions for saving and loading of models: pip install -r requirements.txt OR pip3 install -r requirements.txt
 
 ## Usage
 
