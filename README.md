@@ -1,4 +1,4 @@
-# 02501162-math70076-assessment-2
+# Modeling of wildfires in Portugal (02501162-math70076-assessment-2)
 
 This repository contains the project for the 2nd assessment. The project focuses on analyzing the forest fires dataset from the UCI Machine Learning Repository to predict the area of forest fires in the Montesinho National Park. The goal is to explore various machine learning models to predict the forest fire area and understand the main drivers. Additionally, this repository contains a file to plot the predicted area based on specific input variables. The full report is located in the outputs folder, as well as this main root folder.
 
